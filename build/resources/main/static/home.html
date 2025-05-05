@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>홈</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    button { margin: 5px; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h2 id="status-title">홈페이지</h2>
+  <div id="user-actions"></div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    const title = document.getElementById("status-title");
+    const actions = document.getElementById("user-actions");
+
+    if (token) {
+      // ✅ 로그인 상태
+      title.innerText = "✅ 로그인 상태입니다!";
+      actions.innerHTML = `
+        <button onclick="goToMypage()">마이페이지</button>
+        <button onclick="logout()">로그아웃</button>
+      `;
+    } else {
+      // ❌ 비로그인 상태
+      title.innerText = "👋 로그인하지 않은 사용자입니다.";
+      actions.innerHTML = `
+        <button onclick="location.href='login.html'">로그인</button>
+        <button onclick="location.href='register.html'">회원가입</button>
+      `;
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      alert("🔓 로그아웃 되었습니다.");
+      location.href = "login.html";
+    }
+
+    function goToMypage() {
+      location.href = "mypage.html";
+    }
+  </script>
+</body>
+</html>

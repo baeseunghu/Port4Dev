@@ -30,8 +30,13 @@
           alert("✅ 회원가입 성공!");
           window.location.href = "login.html";
         } else {
-          const err = await res.text();
-          alert("❌ 실패: " + res.status + "\n" + err);
+          const err = await res.json(); // JSON으로 받음
+          // 중복 이메일 예외 처리 메시지 추출
+          if (res.status === 400 && err.message?.includes("이미 존재하는 이메일")) {
+            alert("❌ 이미 등록된 이메일입니다. 다른 이메일을 사용하세요.");
+          } else {
+            alert("❌ 실패: " + res.status + "\n" + JSON.stringify(err));
+          }
         }
       } catch (e) {
         alert("❌ 서버 연결 실패: " + e);

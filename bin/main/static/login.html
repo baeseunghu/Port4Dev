@@ -1,0 +1,61 @@
+<!-- src/main/resources/static/login.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+    }
+    input {
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 250px;
+    }
+    button {
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+  <h2>로그인</h2>
+  <input id="email" type="email" placeholder="이메일" /><br>
+  <input id="password" type="password" placeholder="비밀번호" /><br>
+  <button onclick="login()">로그인</button>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch("http://localhost:8081/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert("✅ 로그인 성공!");
+
+          // JWT 토큰 저장 (예시: localStorage)
+          localStorage.setItem("token", data.token);
+
+          // 로그인 후 이동할 페이지
+          window.location.href = "home.html";
+        } else {
+          const err = await response.text();
+          alert("❌ 로그인 실패: " + response.status + "\n" + err);
+        }
+      } catch (e) {
+        alert("❌ 서버 에러: " + e);
+      }
+    }
+  </script>
+</body>
+</html>

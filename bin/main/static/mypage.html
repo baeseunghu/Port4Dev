@@ -1,0 +1,82 @@
+<!-- src/main/resources/static/mypage.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    input { margin-bottom: 10px; padding: 8px; width: 250px; display: block; }
+    button { margin: 5px; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h2>👤 마이페이지</h2>
+  <div id="mypage-section">
+    <p>잠시만 기다려주세요...</p>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    const section = document.getElementById("mypage-section");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      location.href = "login.html";
+    } else {
+      section.innerHTML = `
+        <label>이메일</label>
+        <input type="text" id="email" readonly />
+        <label>이름</label>
+        <input type="text" id="name" />
+        <button onclick="updateInfo()">정보 수정</button>
+        <button onclick="goHome()">홈으로</button>
+      `;
+
+      // 사용자 정보 불러오기
+      fetch("http://localhost:8081/api/users/me", {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("email").value = data.email;
+        document.getElementById("name").value = data.name;
+      })
+      .catch(err => {
+        alert("❌ 사용자 정보를 불러올 수 없습니다.");
+      });
+    }
+
+    function updateInfo() {
+      const name = document.getElementById("name").value;
+
+      fetch("http://localhost:8081/api/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ name })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ 정보가 수정되었습니다.");
+        } else {
+          alert("❌ 수정 실패");
+        }
+      })
+      .catch(err => {
+        alert("❌ 서버 오류 발생");
+        console.error(err);
+      });
+    }
+
+    function goHome() {
+      location.href = "home.html";
+    }
+  </script>
+</body>
+</html>

@@ -30,7 +30,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8080")  // 정적 HTML 파일이 실행되는 주소
+                        .allowedOrigins("http://localhost:8080")  // 정적 HTML이 띄워지는 주소
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
@@ -45,12 +45,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())  // CSRF 비활성화
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register.html", "/login.html", "/main.html", "/error").permitAll()
+                .requestMatchers("/", "/*.html", "/error").permitAll()  // 루트 HTML 접근 허용
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/api/auth/**", "/api/users/**").permitAll()
+                .requestMatchers("/api/users/register", "/api/users/login").permitAll()  // 회원가입, 로그인 허용
+                .requestMatchers("/api/users/me").authenticated()  // ✅ 마이페이지 관련은 인증 필요
+                .requestMatchers("/api/**").permitAll()  // 그 외 /api 경로 허용 (추후 필요시 수정)
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasRole("USER")
-                .anyRequest().authenticated()
+                .anyRequest().authenticated()  // 나머지 요청은 인증 필요
             )
             .userDetailsService(userDetailsService)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -58,7 +60,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ 암호화
+    // ✅ 비밀번호 암호화
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -69,4 +71,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-}
+}   
