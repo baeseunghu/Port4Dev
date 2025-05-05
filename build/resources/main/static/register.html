@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+</head>
+<body>
+  <h2>회원가입</h2>
+  <input id="name" type="text" placeholder="이름 입력" /><br>
+  <input id="email" type="email" placeholder="이메일 입력" /><br>
+  <input id="password" type="password" placeholder="비밀번호 입력" /><br>
+  <button onclick="register()">가입하기</button>
+
+  <script>
+    async function register() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch("http://localhost:8081/api/users/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        if (res.ok) {
+          alert("✅ 회원가입 성공!");
+          window.location.href = "login.html";
+        } else {
+          const err = await res.text();
+          alert("❌ 실패: " + res.status + "\n" + err);
+        }
+      } catch (e) {
+        alert("❌ 서버 연결 실패: " + e);
+      }
+    }
+  </script>
+</body>
+</html>
