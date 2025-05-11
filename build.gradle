@@ -31,8 +31,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    // MySQL 드라이버
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // ✅ PostgreSQL 드라이버 (Render PostgreSQL 호환)
+    runtimeOnly 'org.postgresql:postgresql:42.6.0'
+
+    // ❌ MySQL 드라이버는 삭제 또는 주석 처리
+    // runtimeOnly 'com.mysql:mysql-connector-j'
 
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -40,4 +43,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
+}   
