@@ -1,3 +1,6 @@
+server:
+  port: ${PORT:8081}  # Render = 자동 포트, 로컬 = 8081
+
 spring:
   datasource:
     url: jdbc:postgresql://dpg-c1example.ap-northeast-1.aws.neon.tech:5432/port4devdb
@@ -9,3 +12,7 @@ spring:
     show-sql: true
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: your_super_secret_key_1234567890
+  expiration: 3600000
