@@ -1,0 +1,28 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Arial", sans-serif;
+    background-color: #f3eee9;
+  }
+  
+  .container {
+    position: fixed;
+    top: 150px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f3eee9;
+  }
+  
+  .box {
+    width: 100%;
+    max-width: 500px;
+    padding: 60px 50px;
+    background-color: #726e6b;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
