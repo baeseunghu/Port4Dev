@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시글 목록</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    h1 { margin-bottom: 20px; }
+    input[type="text"] {
+      width: 300px; padding: 8px; margin-bottom: 10px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+    }
+    .post {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    a { text-decoration: none; color: blue; }
+  </style>
+</head>
+<body>
+  <h1>📌 게시글 목록</h1>
+
+  <!-- 🔍 검색창 UI -->
+  <input type="text" id="searchKeyword" placeholder="검색어를 입력하세요" />
+  <button onclick="searchPosts()">🔍 검색</button>
+
+  <div id="post-list"></div>
+
+  <button onclick="location.href='post.html'">✏️ 새 글 작성</button>
+
+  <script>
+    const postList = document.getElementById("post-list");
+
+    function loadPosts() {
+      fetch("http://localhost:8081/api/posts")
+        .then(res => res.json())
+        .then(posts => displayPosts(posts));
+    }
+
+    function displayPosts(posts) {
+      postList.innerHTML = "";
+      if (posts.length === 0) {
+        postList.innerHTML = "<p>❌ 게시글이 없습니다.</p>";
+        return;
+      }
+
+      posts.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>작성자: ${post.authorName}</p>
+          <p>카테고리: ${post.category}</p>
+          <a href="post-detail.html?id=${post.id}">➡️ 자세히 보기</a>
+        `;
+        postList.appendChild(div);
+      });
+    }
+
+    function searchPosts() {
+      const keyword = document.getElementById("searchKeyword").value.trim();
+      if (!keyword) {
+        alert("검색어를 입력하세요.");
+        return;
+      }
+
+      fetch(`http://localhost:8081/api/posts/search?keyword=${encodeURIComponent(keyword)}`)
+        .then(res => res.json())
+        .then(posts => displayPosts(posts));
+    }
+
+    loadPosts();
+  </script>
+</body>
+</html>

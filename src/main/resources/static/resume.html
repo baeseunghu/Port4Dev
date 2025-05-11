@@ -1,0 +1,58 @@
+<!-- src/main/resources/static/resume.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>이력서 작성</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    input, textarea { display: block; margin-bottom: 12px; padding: 8px; width: 300px; }
+    button { padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h2>📄 이력서 작성</h2>
+
+  <form id="resume-form">
+    <input type="text" id="name" placeholder="이름" required />
+    <input type="email" id="email" placeholder="이메일" required />
+    <textarea id="experience" placeholder="경력" required></textarea>
+    <textarea id="skills" placeholder="기술 스택" required></textarea>
+    <button type="submit">이력서 저장</button>
+  </form>
+
+  <script>
+    document.getElementById("resume-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        location.href = "login.html";
+        return;
+      }
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const experience = document.getElementById("experience").value;
+      const skills = document.getElementById("skills").value;
+
+      const res = await fetch("/api/resumes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ name, email, experience, skills })
+      });
+
+      if (res.ok) {
+        alert("이력서가 저장되었습니다.");
+        location.href = "mypage.html";
+      } else {
+        alert("이력서 저장에 실패했습니다.");
+      }
+    });
+  </script>
+</body>
+</html>

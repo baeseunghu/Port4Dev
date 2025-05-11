@@ -1,0 +1,88 @@
+<!-- src/main/resources/static/post-detail.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    input, textarea { display: block; margin-bottom: 10px; width: 100%; padding: 8px; }
+    button { padding: 8px 16px; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h2>📄 게시글 상세</h2>
+  <input type="text" id="title" placeholder="제목" />
+  <textarea id="content" rows="10" placeholder="내용 입력..."></textarea>
+  <p id="author">작성자: </p>
+
+  <button onclick="updatePost()">✏️ 수정</button>
+  <button onclick="deletePost()">🗑️ 삭제</button>
+  <button onclick="location.href='posts.html'">📋 목록으로</button>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    const token = localStorage.getItem("token");
+
+    if (!id) {
+      alert("❌ 게시글 ID가 없습니다.");
+      location.href = "posts.html";
+    }
+
+    fetch(`http://localhost:8081/api/posts/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error("게시글을 찾을 수 없습니다.");
+        return res.json();
+      })
+      .then(post => {
+        document.getElementById("title").value = post.title;
+        document.getElementById("content").value = post.content;
+        document.getElementById("author").textContent = "작성자: " + post.authorName;
+      })
+      .catch(err => {
+        alert("❌ 게시글 로딩 실패: " + err.message);
+        location.href = "posts.html";
+      });
+
+    function updatePost() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      fetch(`http://localhost:8081/api/posts/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ title, content })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ 수정 성공");
+          location.href = "posts.html";
+        } else {
+          alert("❌ 수정 실패");
+        }
+      });
+    }
+
+    function deletePost() {
+      fetch(`http://localhost:8081/api/posts/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("🗑️ 삭제 완료");
+          location.href = "posts.html";
+        } else {
+          alert("❌ 삭제 실패");
+        }
+      });
+    }
+  </script>
+</body>
+</html>

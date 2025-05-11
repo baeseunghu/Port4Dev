@@ -31,8 +31,10 @@ public class User {
     @Column(nullable = false, length = 20)
     private String role = "ROLE_USER";
 
+    // ✅ 기본 생성자
     public User() {}
 
+    // ✅ getter/setter
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
@@ -56,4 +58,9 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    // ✅ 추가된 메서드: ResumeController에서 사용할 수 있게 getId() 정의
+    public Long getId() {
+        return userId;
+    }
 }

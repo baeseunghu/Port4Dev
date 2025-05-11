@@ -17,17 +17,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // ✅ 1. 회원가입
+    // 회원가입
     public User registerUser(User user) {
-        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser.isPresent()) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    // ✅ 2. 로그인
+    // 로그인
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
@@ -37,21 +36,29 @@ public class UserService {
         return user;
     }
 
-    // ✅ 3. JWT 토큰 생성
+    // JWT 토큰 생성
     public String generateToken(User user) {
         return jwtTokenProvider.createToken(user.getEmail(), user.getRole());
     }
 
-    // ✅ 4. 이메일로 유저 조회
+    // 이메일로 유저 조회
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    // ✅ 5. 이름 수정 (마이페이지용)
-    public void updateUser(String email, String newName) {
+    // 사용자 정보 수정
+    public void updateUserInfo(String email, String name, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-        user.setName(newName);
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        if (name != null && !name.trim().isEmpty()) {
+            user.setName(name);
+        }
+
+        if (password != null && !password.trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
         userRepository.save(user);
     }
 }

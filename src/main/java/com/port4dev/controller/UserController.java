@@ -1,3 +1,5 @@
+// src/main/java/com/port4dev/controller/UserController.java
+
 package com.port4dev.controller;
 
 import com.port4dev.dto.*;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -54,15 +58,17 @@ public class UserController {
         return ResponseEntity.ok(new UserInfoResponse(user.getEmail(), user.getName(), user.getRole()));
     }
 
-    // ✅ 사용자 정보 수정
+    // ✅ 사용자 정보 수정 (이름 + 비밀번호 변경)
     @PutMapping("/me")
-    public ResponseEntity<?> updateMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                          @RequestBody UpdateUserRequest request) {
-        try {
-            userService.updateUser(userDetails.getUsername(), request.getName());
-            return ResponseEntity.ok().body("수정 완료");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("❌ 수정 중 오류 발생");
-        }
+    public ResponseEntity<?> updateUserInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody Map<String, String> updateRequest) {
+
+        String email = userDetails.getUsername();
+        String name = updateRequest.get("name");
+        String password = updateRequest.get("password");
+
+        userService.updateUserInfo(email, name, password);
+        return ResponseEntity.ok("✅ 사용자 정보가 수정되었습니다.");
     }
 }

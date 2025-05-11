@@ -6,7 +6,7 @@
   <title>마이페이지</title>
   <style>
     body { font-family: sans-serif; padding: 40px; }
-    input { margin-bottom: 10px; padding: 8px; width: 250px; display: block; }
+    input { margin-bottom: 10px; padding: 8px; width: 300px; display: block; }
     button { margin: 5px; padding: 8px 16px; }
   </style>
 </head>
@@ -24,16 +24,19 @@
       alert("로그인이 필요합니다.");
       location.href = "login.html";
     } else {
+      // ✅ 초기 마크업 구성
       section.innerHTML = `
         <label>이메일</label>
         <input type="text" id="email" readonly />
         <label>이름</label>
-        <input type="text" id="name" />
-        <button onclick="updateInfo()">정보 수정</button>
-        <button onclick="goHome()">홈으로</button>
+        <input type="text" id="update-name" />
+        <label>새 비밀번호</label>
+        <input type="password" id="update-password" placeholder="변경 시 입력" />
+        <button onclick="updateUser()">정보 수정</button>
+        <button onclick="goHome()">🏠 홈으로</button>
       `;
 
-      // 사용자 정보 불러오기
+      // ✅ 사용자 정보 가져오기
       fetch("http://localhost:8081/api/users/me", {
         method: "GET",
         headers: {
@@ -43,15 +46,16 @@
       .then(res => res.json())
       .then(data => {
         document.getElementById("email").value = data.email;
-        document.getElementById("name").value = data.name;
+        document.getElementById("update-name").value = data.name;
       })
       .catch(err => {
         alert("❌ 사용자 정보를 불러올 수 없습니다.");
       });
     }
 
-    function updateInfo() {
-      const name = document.getElementById("name").value;
+    function updateUser() {
+      const name = document.getElementById("update-name").value;
+      const password = document.getElementById("update-password").value;
 
       fetch("http://localhost:8081/api/users/me", {
         method: "PUT",
@@ -59,13 +63,14 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token
         },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name, password })
       })
       .then(res => {
         if (res.ok) {
-          alert("✅ 정보가 수정되었습니다.");
+          alert("✅ 수정 완료!");
+          location.reload();
         } else {
-          alert("❌ 수정 실패");
+          alert("❌ 수정 실패!");
         }
       })
       .catch(err => {
